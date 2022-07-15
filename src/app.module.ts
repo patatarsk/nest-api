@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 const { MONGODB_URL, MONGODB_DATABASE } = process.env;
 @Module({
@@ -11,6 +12,7 @@ const { MONGODB_URL, MONGODB_DATABASE } = process.env;
       dbName: MONGODB_DATABASE,
     }),
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
