@@ -5,6 +5,8 @@ import { SignUpUserDto } from './dto/sign-up-user.dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../users/schemas/user.schema';
+import { hash, compare } from 'bcrypt';
+import { bcryptConstants } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -22,13 +24,20 @@ export class AuthService {
       throw new ConflictException('User already exists');
     }
 
-    const signUpUser = new this.userModel(signUpUserDto);
+    const password = await hash(
+      signUpUserDto.password,
+      bcryptConstants.saltRounds,
+    );
+    console.log(password);
+    const signUpUser = new this.userModel({ ...signUpUserDto, password });
     return signUpUser.save();
   }
 
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(username);
-    if (user && user.password === password) {
+    const isValidPassword = await compare(password, user.password);
+
+    if (user && isValidPassword) {
       const { password, ...result } = user;
       return result;
     }
