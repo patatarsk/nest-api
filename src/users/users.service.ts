@@ -51,4 +51,10 @@ export class UsersService {
 
     await this.userModel.deleteOne({ _id: id });
   }
+
+  async saveAvatar(username: string, filename: string): Promise<void> {
+    await this.userModel
+      .updateOne({ email: username }, { avatar: filename })
+      .exec();
+  }
 }

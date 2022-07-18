@@ -7,7 +7,13 @@ import {
   Param,
   Delete,
   UseGuards,
+  Post,
+  UseInterceptors,
+  UploadedFile,
+  Request,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -49,5 +55,14 @@ export class UsersController {
     const { id } = ParamsUserDto;
 
     return this.usersService.remove(id);
+  }
+
+  @Post('/upload/avatar')
+  @UseInterceptors(FileInterceptor('file', { dest: './avatars' }))
+  @ApiBearerAuth('access-token')
+  uploadAvatar(@UploadedFile() file: Express.Multer.File, @Request() req) {
+    const { username } = req.user;
+
+    return this.usersService.saveAvatar(username, file.filename);
   }
 }
