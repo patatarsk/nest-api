@@ -1,3 +1,4 @@
+import { ValidateFile } from './pipes/fileValidation.pipe';
 import { FileUploadDto } from './dto/file-upload.dto';
 import { ParamsUserDto } from './dto/params-user.dto';
 import {
@@ -73,7 +74,10 @@ export class UsersController {
     description: 'A new avatar for the user',
     type: FileUploadDto,
   })
-  uploadAvatar(@UploadedFile() file: Express.Multer.File, @Request() req) {
+  uploadAvatar(
+    @UploadedFile(new ValidateFile()) file: Express.Multer.File,
+    @Request() req,
+  ) {
     const { username } = req.user;
 
     return this.usersService.saveAvatar(username, file.filename);
