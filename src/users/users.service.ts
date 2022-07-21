@@ -12,7 +12,7 @@ export class UsersService {
     return this.userModel.find().exec();
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<UserDocument> {
     const foundUser = await this.userModel.findOne({ email }).exec();
 
     if (!foundUser) {
@@ -44,5 +44,13 @@ export class UsersService {
     await this.userModel
       .updateOne({ email: username }, { avatar: filename })
       .exec();
+  }
+
+  async autorshipStatistic(): Promise<void> {
+    const agregate = this.userModel.aggregate([
+      { $group: { totaldocs: { $sum: 1 } } },
+    ]);
+
+    console.log(agregate);
   }
 }

@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { NewsModule } from './news/news.module';
 
 const { MONGODB_URL, MONGODB_DATABASE } = process.env;
 @Module({
@@ -13,6 +14,7 @@ const { MONGODB_URL, MONGODB_DATABASE } = process.env;
     }),
     UsersModule,
     AuthModule,
+    NewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
