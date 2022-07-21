@@ -47,10 +47,6 @@ export class UsersService {
   }
 
   async autorshipStatistic(): Promise<void> {
-    const agregate = this.userModel.aggregate([
-      { $group: { totaldocs: { $sum: 1 } } },
-    ]);
-
-    console.log(agregate);
+    console.log('Hello');
   }
 }

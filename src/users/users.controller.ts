@@ -82,4 +82,10 @@ export class UsersController {
 
     return this.usersService.saveAvatar(username, file.filename);
   }
+
+  @Get('/autorship')
+  @ApiBearerAuth('access-token')
+  autorshipStatistic() {
+    return this.usersService.autorshipStatistic();
+  }
 }
