@@ -28,7 +28,6 @@ export class AuthService {
       signUpUserDto.password,
       bcryptConstants.saltRounds,
     );
-    console.log(password);
     const signUpUser = new this.userModel({ ...signUpUserDto, password });
     return signUpUser.save();
   }

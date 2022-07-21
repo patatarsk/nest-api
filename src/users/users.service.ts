@@ -33,23 +33,11 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<void> {
-    const foundUser = await this.userModel.findById(id).exec();
-
-    if (!foundUser) {
-      throw new NotFoundException('User not found');
-    }
-
     await this.userModel.updateOne({ _id: id }, updateUserDto).exec();
   }
 
   async remove(id: string): Promise<void> {
-    const foundUser = await this.userModel.findById(id).exec();
-
-    if (!foundUser) {
-      throw new NotFoundException('User not found');
-    }
-
-    await this.userModel.deleteOne({ _id: id });
+    await this.userModel.deleteOne({ _id: id }).exec();
   }
 
   async saveAvatar(username: string, filename: string): Promise<void> {

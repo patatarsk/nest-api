@@ -1,3 +1,4 @@
+import { FileUploadDto } from './dto/file-upload.dto';
 import { ParamsUserDto } from './dto/params-user.dto';
 import {
   Controller,
@@ -17,7 +18,8 @@ import { Express } from 'express';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { diskStorage } from 'multer';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
@@ -58,8 +60,19 @@ export class UsersController {
   }
 
   @Post('/upload/avatar')
-  @UseInterceptors(FileInterceptor('file', { dest: './avatars' }))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './avatars',
+      }),
+    }),
+  )
   @ApiBearerAuth('access-token')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'A new avatar for the user',
+    type: FileUploadDto,
+  })
   uploadAvatar(@UploadedFile() file: Express.Multer.File, @Request() req) {
     const { username } = req.user;
 
