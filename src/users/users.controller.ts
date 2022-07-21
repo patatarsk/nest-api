@@ -1,57 +1,85 @@
+import { ValidateFile } from './pipes/fileValidation.pipe';
+import { FileUploadDto } from './dto/file-upload.dto';
+import { ParamsUserDto } from './dto/params-user.dto';
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
   Delete,
   UseGuards,
+  Post,
+  UseInterceptors,
+  UploadedFile,
+  Request,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ValidateMongoId } from './pipes/mongoIdValidation.pipe';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { diskStorage } from 'multer';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiBearerAuth('access-token')
   findAll() {
     return this.usersService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiBearerAuth('access-token')
-  findOne(@Param('id', ValidateMongoId) id: string) {
+  findOne(@Param() ParamsUserDto: ParamsUserDto) {
+    const { id } = ParamsUserDto;
+
     return this.usersService.findOne(id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @ApiBearerAuth('access-token')
   update(
-    @Param('id', ValidateMongoId) id: string,
+    @Param() ParamsUserDto: ParamsUserDto,
     @Body() updateUserDto: UpdateUserDto,
   ) {
+    const { id } = ParamsUserDto;
+
     return this.usersService.update(id, updateUserDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @ApiBearerAuth('access-token')
-  remove(@Param('id', ValidateMongoId) id: string) {
+  remove(@Param() ParamsUserDto: ParamsUserDto) {
+    const { id } = ParamsUserDto;
+
     return this.usersService.remove(id);
+  }
+
+  @Post('/upload/avatar')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './avatars',
+      }),
+    }),
+  )
+  @ApiBearerAuth('access-token')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'A new avatar for the user',
+    type: FileUploadDto,
+  })
+  uploadAvatar(
+    @UploadedFile(new ValidateFile()) file: Express.Multer.File,
+    @Request() req,
+  ) {
+    const { username } = req.user;
+
+    return this.usersService.saveAvatar(username, file.filename);
   }
 }
