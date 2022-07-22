@@ -35,7 +35,10 @@ export class NewsService {
   }
 
   findAll() {
-    return this.newsModel.find().exec();
+    return this.newsModel
+      .find()
+      .populate('owners', { email: 1, name: 1, _id: 0 })
+      .exec();
   }
 
   async findOne(id: string) {
