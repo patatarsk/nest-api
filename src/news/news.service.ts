@@ -35,10 +35,27 @@ export class NewsService {
   }
 
   findAll() {
-    return this.newsModel.find();
+    return this.newsModel.find().exec();
   }
 
-  findOne(id: string) {
-    return this.newsModel.findById(id);
+  async findOne(id: string) {
+    const newsData = await this.newsModel
+      .aggregate([
+        { $match: { _id: new mongoose.Types.ObjectId(id) } },
+        {
+          $lookup: {
+            localField: 'owners',
+            from: 'users',
+            foreignField: '_id',
+            as: 'ownersdata',
+            pipeline: [{ $project: { name: 1, email: 1 } }, { $unset: '_id' }],
+          },
+        },
+        { $set: { owners: '$ownersdata' } },
+        { $unset: 'ownersdata' },
+      ])
+      .exec();
+
+    return newsData;
   }
 }

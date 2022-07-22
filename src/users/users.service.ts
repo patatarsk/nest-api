@@ -46,7 +46,22 @@ export class UsersService {
       .exec();
   }
 
-  async autorshipStatistic(): Promise<void> {
-    console.log('Hello');
+  async autorshipStatistic(): Promise<any> {
+    const autorshipStatistic = await this.userModel
+      .aggregate([
+        {
+          $lookup: {
+            localField: 'news',
+            from: 'news',
+            foreignField: '_id',
+            as: 'newsdata',
+          },
+        },
+        { $project: { email: 1, newsCount: { $size: '$newsdata' } } },
+        { $sort: { newsCount: -1 } },
+      ])
+      .exec();
+
+    return autorshipStatistic;
   }
 }

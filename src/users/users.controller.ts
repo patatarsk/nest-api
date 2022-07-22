@@ -33,6 +33,12 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('/autorship')
+  @ApiBearerAuth('access-token')
+  autorshipStatistic() {
+    return this.usersService.autorshipStatistic();
+  }
+
   @Get(':id')
   @ApiBearerAuth('access-token')
   findOne(@Param() ParamsUserDto: ParamsUserDto) {
@@ -81,11 +87,5 @@ export class UsersController {
     const { username } = req.user;
 
     return this.usersService.saveAvatar(username, file.filename);
-  }
-
-  @Get('/autorship')
-  @ApiBearerAuth('access-token')
-  autorshipStatistic() {
-    return this.usersService.autorshipStatistic();
   }
 }
