@@ -22,7 +22,10 @@ export class NewsService {
       ...newsData,
     });
 
-    const ownersIds = [...owners, ownerId];
+    const ownersIds = [
+      ...owners.map((id) => new mongoose.Schema.Types.ObjectId(id)),
+      ownerId,
+    ];
 
     ceatedNews.owners.push(...ownersIds);
 
