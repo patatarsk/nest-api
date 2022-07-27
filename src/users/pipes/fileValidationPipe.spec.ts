@@ -41,19 +41,15 @@ describe('ValidateFile', () => {
 
   describe('transform', () => {
     it('should throw an error if no file is provided', async () => {
-      try {
-        validateFile.transform(undefined, undefined);
-      } catch (error) {
-        expect(error).toBeInstanceOf(BadRequestException);
-      }
+      expect(() => validateFile.transform(undefined, undefined)).toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw an error if the file is not an image', async () => {
-      try {
-        validateFile.transform(fakeNoImageFile, undefined);
-      } catch (error) {
-        expect(error).toBeInstanceOf(BadRequestException);
-      }
+      expect(() => validateFile.transform(fakeNoImageFile, undefined)).toThrow(
+        BadRequestException,
+      );
     });
 
     it('should return the file if it is an image', async () => {

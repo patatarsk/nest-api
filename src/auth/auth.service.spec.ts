@@ -114,11 +114,9 @@ describe('AuthService', () => {
 
     test('it should throw error if user already exists', async () => {
       fakeUserModel.findOne = jest.fn().mockResolvedValue(fakeCreatedUser);
-      try {
-        await service.signUpUser(fakeSignUpUserDto);
-      } catch (error) {
-        expect(error).toBeInstanceOf(ConflictException);
-      }
+      expect(
+        async () => await service.signUpUser(fakeSignUpUserDto),
+      ).rejects.toThrow(ConflictException);
     });
   });
 

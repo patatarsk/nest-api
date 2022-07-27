@@ -96,11 +96,9 @@ describe('UsersService', () => {
         exec: jest.fn().mockImplementationOnce(() => null),
       }));
 
-      try {
-        await service.findByEmail(fakeEmail);
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotFoundException);
-      }
+      expect(async () => await service.findByEmail(fakeEmail)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -122,11 +120,9 @@ describe('UsersService', () => {
         exec: jest.fn().mockImplementationOnce(() => null),
       }));
 
-      try {
-        await service.findOne(fakeId);
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotFoundException);
-      }
+      expect(async () => await service.findOne(fakeId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
