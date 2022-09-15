@@ -12,7 +12,7 @@ export class UsersService {
     return this.userModel.find().exec();
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<UserDocument> {
     const foundUser = await this.userModel.findOne({ email }).exec();
 
     if (!foundUser) {
@@ -44,5 +44,24 @@ export class UsersService {
     await this.userModel
       .updateOne({ email: username }, { avatar: filename })
       .exec();
+  }
+
+  async autorshipStatistic(): Promise<any> {
+    const autorshipStatistic = await this.userModel
+      .aggregate([
+        {
+          $lookup: {
+            localField: 'news',
+            from: 'news',
+            foreignField: '_id',
+            as: 'newsdata',
+          },
+        },
+        { $project: { email: 1, newsCount: { $size: '$newsdata' } } },
+        { $sort: { newsCount: -1 } },
+      ])
+      .exec();
+
+    return autorshipStatistic;
   }
 }
