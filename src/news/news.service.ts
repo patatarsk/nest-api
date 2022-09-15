@@ -22,7 +22,10 @@ export class NewsService {
       ...newsData,
     });
 
-    const ownersIds = [...owners, ownerId];
+    const ownersIds = [
+      ...owners.map((id) => new mongoose.Schema.Types.ObjectId(id)),
+      ownerId,
+    ];
 
     ceatedNews.owners.push(...ownersIds);
 
@@ -35,7 +38,10 @@ export class NewsService {
   }
 
   findAll() {
-    return this.newsModel.find().exec();
+    return this.newsModel
+      .find()
+      .populate('owners', { email: 1, name: 1, _id: 0 })
+      .exec();
   }
 
   async findOne(id: string) {

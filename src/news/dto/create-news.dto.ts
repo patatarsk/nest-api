@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsArray, IsMongoId } from 'class-validator';
-import { ObjectId } from 'mongoose';
 
 export class CreateNewsDto {
   @ApiProperty({
@@ -23,5 +22,5 @@ export class CreateNewsDto {
   })
   @IsArray()
   @IsMongoId({ each: true })
-  owners: ObjectId[];
+  owners: string[];
 }

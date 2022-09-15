@@ -33,15 +33,21 @@ export class AuthService {
   }
 
   async validateUser(username: string, password: string): Promise<any> {
-    const user = await (await this.usersService.findByEmail(username)).toJSON();
+    const user = await this.usersService.findByEmail(username);
+
+    if (!user) {
+      return null;
+    }
+
     const isValidPassword = await compare(password, user.password);
 
-    if (user && isValidPassword) {
-      const { password, ...result } = user;
-
-      return result;
+    if (!isValidPassword) {
+      return null;
     }
-    return null;
+
+    const { password: pswrd, ...result } = user.toJSON();
+
+    return result;
   }
 
   async login(user: any): Promise<any> {
